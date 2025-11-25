@@ -13,5 +13,7 @@ UCLASS()
 class BRAVESOUL_API ABSCharacterPlayer : public ABSCharacterBase
 {
 	GENERATED_BODY()
-	
+public:
+	ABSCharacterPlayer();
+
 };
