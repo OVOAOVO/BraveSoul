@@ -28,5 +28,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
 	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> RotationCameraAction;
+
 	void Move(const FInputActionValue& InputActionValue);
+
+	void RotationCamera(const FInputActionValue& InputActionValue);
 };

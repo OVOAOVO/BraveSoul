@@ -4,6 +4,7 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 ABSPlayerController::ABSPlayerController()
 {
@@ -18,12 +19,12 @@ void ABSPlayerController::BeginPlay()
     check(Subsystem);
     Subsystem->AddMappingContext(BSInputMappingContext, 0);
 
-    bShowMouseCursor = true;
+    bShowMouseCursor = false;
     DefaultMouseCursor = EMouseCursor::Default;
 
     FInputModeGameAndUI InputModeData;
-    InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-    InputModeData.SetHideCursorDuringCapture(false);
+    InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::LockOnCapture);
+    InputModeData.SetHideCursorDuringCapture(true);
     SetInputMode(InputModeData);
 }
 
@@ -34,6 +35,7 @@ void ABSPlayerController::SetupInputComponent()
     UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
     EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABSPlayerController::Move);
+    EnhancedInputComponent->BindAction(RotationCameraAction, ETriggerEvent::Triggered, this, &ABSPlayerController::RotationCamera);
 }
 
 void ABSPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -49,5 +51,25 @@ void ABSPlayerController::Move(const FInputActionValue& InputActionValue)
     {
         ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
         ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+    }
+}
+
+void ABSPlayerController::RotationCamera(const FInputActionValue& InputActionValue)
+{
+    const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+
+    if (APawn* ControlledPawn = GetPawn<APawn>())
+    {
+        USpringArmComponent* SpringArm = ControlledPawn->FindComponentByClass<USpringArmComponent>();
+        if (SpringArm)
+        {
+            FRotator CurrentRot = SpringArm->GetRelativeRotation();
+            float NewYaw = CurrentRot.Yaw + InputAxisVector.X;
+            SpringArm->SetRelativeRotation(FRotator(CurrentRot.Pitch, NewYaw, 0.f));
+
+            FRotator NewControlRotation = GetControlRotation();
+            NewControlRotation.Yaw += InputAxisVector.X;
+            SetControlRotation(NewControlRotation);
+        }
     }
 }
