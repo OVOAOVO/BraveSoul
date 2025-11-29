@@ -28,6 +28,25 @@ void ABSPlayerController::BeginPlay()
     SetInputMode(InputModeData);
 }
 
+void ABSPlayerController::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+    //if (APawn* ControlledPawn = GetPawn<APawn>())
+    //{
+    //    FVector SnappedLocation = FVector(
+    //        FMath::GridSnap(ControlledPawn->GetActorLocation().X, 1),
+    //        FMath::GridSnap(ControlledPawn->GetActorLocation().Y, 1),
+    //        FMath::GridSnap(ControlledPawn->GetActorLocation().Z, 1)
+    //    );
+
+    //    USpringArmComponent* SpringArm = ControlledPawn->FindComponentByClass<USpringArmComponent>();
+    //    if (SpringArm)
+    //    {
+    //        SpringArm->SetWorldLocation(SnappedLocation);
+    //    }
+    //}
+}
+
 void ABSPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
@@ -64,11 +83,17 @@ void ABSPlayerController::RotationCamera(const FInputActionValue& InputActionVal
         if (SpringArm)
         {
             FRotator CurrentRot = SpringArm->GetRelativeRotation();
+
             float NewYaw = CurrentRot.Yaw + InputAxisVector.X;
-            SpringArm->SetRelativeRotation(FRotator(CurrentRot.Pitch, NewYaw, 0.f));
+            float NewPitch = CurrentRot.Pitch + InputAxisVector.Y;
+
+            NewPitch = FMath::Clamp(NewPitch, -80.f, 80.f);
+
+            SpringArm->SetRelativeRotation(FRotator(NewPitch, NewYaw, 0.f));
 
             FRotator NewControlRotation = GetControlRotation();
-            NewControlRotation.Yaw += InputAxisVector.X;
+            NewControlRotation.Yaw = NewYaw;
+            NewControlRotation.Pitch = NewPitch;
             SetControlRotation(NewControlRotation);
         }
     }
