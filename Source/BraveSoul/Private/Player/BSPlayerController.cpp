@@ -42,7 +42,7 @@ void ABSPlayerController::Tick(float DeltaSeconds)
     FVector WorldLocation = cameraA->GetComponentLocation();
     FVector RightVector = cameraA->GetRightVector();
 
-    FRotator SpringArmWorldLocation = SpringArm->GetComponentRotation();
+    FRotator SpringArmWorldLocation = SpringArm->GetRelativeRotation();
     FVector A = WorldLocation.RotateAngleAxis(SpringArmWorldLocation.Pitch, RightVector);
     FVector B = A.RotateAngleAxis(SpringArmWorldLocation.Yaw * (-1.f), ControlledPawn->GetActorUpVector());
 
@@ -90,14 +90,14 @@ void ABSPlayerController::RotationCamera(const FInputActionValue& InputActionVal
         USpringArmComponent* SpringArm = ControlledPawn->FindComponentByClass<USpringArmComponent>();
         if (SpringArm)
         {
-            FRotator CurrentRot = SpringArm->GetComponentRotation();
+            FRotator CurrentRot = SpringArm->GetRelativeRotation();
 
             float NewYaw = CurrentRot.Yaw + InputAxisVector.X;
             float NewPitch = CurrentRot.Pitch + InputAxisVector.Y;
 
             NewPitch = FMath::Clamp(NewPitch, -80.f, 80.f);
 
-            SpringArm->SetWorldRotation(FRotator(NewPitch, NewYaw, 0.f));
+            SpringArm->SetRelativeRotation(FRotator(NewPitch, NewYaw, 0.f));
 
             FRotator NewControlRotation = GetControlRotation();
             NewControlRotation.Yaw = NewYaw;
