@@ -51,7 +51,6 @@ void ABSPlayerController::Tick(float DeltaSeconds)
     FVector C = SnappedLocation.RotateAngleAxis(SpringArmWorldLocation.Yaw, ControlledPawn->GetActorUpVector());
     FVector D = C.RotateAngleAxis(SpringArmWorldLocation.Pitch * (-1.f), RightVector);
 
-
     SceneCaptureCompoent->SetWorldLocation(D, false, nullptr, ETeleportType::None);
 }
 
@@ -93,15 +92,11 @@ void ABSPlayerController::RotationCamera(const FInputActionValue& InputActionVal
             FRotator CurrentRot = SpringArm->GetRelativeRotation();
 
             float NewYaw = CurrentRot.Yaw + InputAxisVector.X;
-            float NewPitch = CurrentRot.Pitch + InputAxisVector.Y;
 
-            NewPitch = FMath::Clamp(NewPitch, -80.f, 80.f);
-
-            SpringArm->SetRelativeRotation(FRotator(NewPitch, NewYaw, 0.f));
+            SpringArm->SetRelativeRotation(FRotator(CurrentRot.Pitch, NewYaw, 0.f));
 
             FRotator NewControlRotation = GetControlRotation();
             NewControlRotation.Yaw = NewYaw;
-            NewControlRotation.Pitch = NewPitch;
             SetControlRotation(NewControlRotation);
         }
     }
