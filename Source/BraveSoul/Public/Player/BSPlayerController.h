@@ -18,6 +18,11 @@ class BRAVESOUL_API ABSPlayerController : public APlayerController
 public:
 	ABSPlayerController();
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "PixelPerfect")
+	float ScreenDX;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "PixelPerfect")
+	float ScreenDY;
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;

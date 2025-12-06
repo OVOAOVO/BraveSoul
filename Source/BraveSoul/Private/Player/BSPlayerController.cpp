@@ -47,6 +47,11 @@ void ABSPlayerController::Tick(float DeltaSeconds)
     FVector B = A.RotateAngleAxis(SpringArmWorldLocation.Yaw * (-1.f), ControlledPawn->GetActorUpVector());
 
     FVector SnappedLocation = B.GridSnap(SceneCaptureCompoent->OrthoWidth / SceneCaptureCompoent->TextureTarget->SizeX);
+    FVector subpixelOffset = B - SnappedLocation;
+
+    //NOTE: screen space offset TO calculate UV offset(NOT USE)
+    ScreenDX = FVector::DotProduct(subpixelOffset, cameraA->GetRightVector());
+    ScreenDY = FVector::DotProduct(subpixelOffset, cameraA->GetUpVector());
 
     FVector C = SnappedLocation.RotateAngleAxis(SpringArmWorldLocation.Yaw, ControlledPawn->GetActorUpVector());
     FVector D = C.RotateAngleAxis(SpringArmWorldLocation.Pitch * (-1.f), RightVector);
